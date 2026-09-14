@@ -54,9 +54,11 @@ export function countsByDate(events, dates, opts) {
   return out
 }
 
+// A start time for the day it starts; anything already under way reads as
+// "on now" today and "all day" on a date you are planning ahead for.
 export function timeLabel(e, dateStr) {
   const s = new Date(e.starts_at)
-  if (isoDate(s) !== dateStr) return 'on now'
+  if (isoDate(s) !== dateStr) return dateStr === isoDate(new Date()) ? 'on now' : 'all day'
   return `${String(s.getHours()).padStart(2, '0')}:${String(s.getMinutes()).padStart(2, '0')}`
 }
 

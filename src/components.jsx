@@ -1,4 +1,4 @@
-import { timeLabel, runsUntil, isLongRun, DOG_LABEL } from './lib/events.js'
+import { timeLabel, runsUntil, isLongRun, isoDate, DOG_LABEL } from './lib/events.js'
 
 export function DogBadge({ j, short }) {
   const v = j.dog.verdict
@@ -49,7 +49,7 @@ export function EventRow({ e, dateStr, pepper }) {
   else if (pepper) flags.push('dog rule unknown')
   return (
     <div className="event">
-      <div className="when">{long ? 'on now' : timeLabel(e, dateStr)}</div>
+      <div className="when">{long ? (dateStr === isoDate(new Date()) ? 'on now' : 'all day') : timeLabel(e, dateStr)}</div>
       <div className="ebody">
         <div className="t">{e.title}</div>
         <div className="d">{bits}{flags.length ? ' · ' + flags.join(' · ') : ''}{long && until ? ` · until ${until}` : ''}</div>
