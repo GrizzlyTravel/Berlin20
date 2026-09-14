@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { rank, whySentence } from '../engine.js'
 import { describe } from '../lib/weather.js'
-import { DogBadge, KidBadge, euro, hoursText, num } from '../components.jsx'
+import { isoDate, feedForDate, countsByDate } from '../lib/events.js'
+import { DogBadge, KidBadge, EventRow, euro, hoursText, num } from '../components.jsx'
 
 const MOODS = [
   ['surprise', 'Surprise us'], ['outdoors', 'Outdoors'], ['history', 'History'], ['museums', 'Museums'],
@@ -9,33 +10,79 @@ const MOODS = [
   ['relaxed', 'Relaxed'], ['active', 'Active'],
 ]
 
-export default function Today({ journeys, weather, progress, events, prefs, setPrefs, open, onNotToday, onSetDate }) {
+// The strip covers today plus nine days, which is as far as the forecast reaches.
+export function dayList(n = 10) {
+  const out = []
+  for (let i = 0; i < n; i++) {
+    const d = new Date(); d.setDate(d.getDate() + i)
+    out.push(isoDate(d))
+  }
+  return out
+}
+
+function label(dateStr, i) {
+  if (i === 0) return 'Today'
+  if (i === 1) return 'Tomorrow'
+  const d = new Date(dateStr + 'T12:00:00')
+  return d.toLocaleDateString('en-GB', { weekday: 'short' }) + ' ' + d.getDate()
+}
+
+function nextSaturday() {
+  const d = new Date()
+  const delta = (6 - d.getDay() + 7) % 7
+  d.setDate(d.getDate() + delta)
+  return isoDate(d)
+}
+
+export default function Today({ journeys, weather, progress, events, eventsError, syncedAt, prefs, setPrefs, open, onNotToday, onSetDate, goWhatsOn }) {
   const [skipped, setSkipped] = useState([])
-  const date = prefs.date ? new Date(prefs.date + 'T10:00:00') : new Date()
-  const dateStr = isoDate(date)
+  const days = useMemo(() => dayList(10), [])
+  const todayStr = days[0]
+  const dateStr = prefs.date && days.includes(prefs.date) ? prefs.date : todayStr
+  const isToday = dateStr === todayStr
   const w = weather?.byDate?.[dateStr] || null
-  const isToday = dateStr === isoDate(new Date())
+  const sat = nextSaturday()
+
+  const dayEvents = useMemo(
+    () => feedForDate(events, dateStr, { pepper: prefs.pepper, elle: prefs.elle }),
+    [events, dateStr, prefs.pepper, prefs.elle]
+  )
+  const counts = useMemo(
+    () => countsByDate(events, days, { pepper: prefs.pepper, elle: prefs.elle }),
+    [events, days, prefs.pepper, prefs.elle]
+  )
 
   const result = useMemo(() => {
     const js = journeys.filter(j => !skipped.includes(j.id))
-    return rank(js, { date: isToday ? new Date() : date, hours: prefs.hours, elle: prefs.elle, pepper: prefs.pepper, mood: prefs.mood, weather: w, progress, events })
-  }, [journeys, skipped, prefs, w, progress, events, isToday])
+    const when = isToday ? new Date() : new Date(dateStr + 'T10:00:00')
+    return rank(js, { date: when, hours: prefs.hours, elle: prefs.elle, pepper: prefs.pepper, mood: prefs.mood, weather: w, progress, events: dayEvents })
+  }, [journeys, skipped, prefs, w, progress, dayEvents, isToday, dateStr])
 
   const { pick, easier, bolder, out } = result
-  const dayLabel = date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
+  const full = new Date(dateStr + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
 
   function toggle(k) { setPrefs(p => ({ ...p, [k]: !p[k] })) }
 
   return (
     <div className="fade">
       <div className="today-head">
-        <div className="date">
-          {isToday ? 'Today, ' : ''}{dayLabel}
-          {' · '}
-          <button className="chip" style={{ padding: '2px 8px', fontSize: 12 }} onClick={() => onSetDate(isToday ? shift(1) : null)}>{isToday ? 'plan tomorrow' : 'back to today'}</button>
-        </div>
-        <h1>What should we do{isToday ? ' today' : ''}?</h1>
+        <div className="date">{isToday ? 'Today, ' : ''}{full}</div>
+        <h1>What should we do{isToday ? ' today' : dateStr === sat ? ' on Saturday' : ' then'}?</h1>
         <div className="wx">{w ? describe(w) : weather === null ? 'Weather unavailable right now.' : 'Checking the weather…'}</div>
+      </div>
+
+      <div className="strip">
+        {days.map((d, i) => (
+          <button key={d} className={`day ${d === dateStr ? 'on' : ''}`} onClick={() => onSetDate(i === 0 ? null : d)}>
+            <span className="dl">{label(d, i)}</span>
+            <span className="dw">{weather?.byDate?.[d] ? `${Math.round(weather.byDate[d].tempMax)}°` : '·'}</span>
+            {counts[d] > 0 && <span className="dc">{counts[d]}</span>}
+          </button>
+        ))}
+        <button className={`day wknd ${dateStr === sat ? 'on' : ''}`} onClick={() => onSetDate(sat === todayStr ? null : sat)}>
+          <span className="dl">Weekend</span>
+          <span className="dw">Sat</span>
+        </button>
       </div>
 
       <div className="controls">
@@ -82,7 +129,7 @@ export default function Today({ journeys, weather, progress, events, prefs, setP
       ) : (
         <section className="pick">
           <div className="eyebrow rust">Nothing fits</div>
-          <p className="why">With those settings nothing works today. Give it more time, or leave Pepper at home for this one.</p>
+          <p className="why">Nothing works with those settings. Give it more time, drop the mood filter, or leave Pepper at home for this one.</p>
         </section>
       )}
 
@@ -95,22 +142,24 @@ export default function Today({ journeys, weather, progress, events, prefs, setP
 
       <section className="sec">
         <div className="eyebrow">Happening {isToday ? 'today' : 'that day'}</div>
-        {events.length === 0 ? (
-          <p className="quiet">Nothing on file for this day yet. The live events layer is next.</p>
-        ) : events.map(e => (
-          <div className="event" key={e.id}>
-            <div className="when">{fmtTime(e.starts_at)}</div>
-            <div>
-              <div className="t">{e.title}</div>
-              <div className="d">
-                {[e.venue, e.area].filter(Boolean).join(', ')}
-                {e.dog === 'no' ? ' · no dogs' : e.dog === 'yes' ? ' · dogs fine' : e.dog === 'outdoor' ? ' · dogs outside only' : ''}
-                {e.free ? ' · free' : ''}
-              </div>
-              {e.url && <a className="d" href={e.url} target="_blank" rel="noreferrer">Details</a>}
-            </div>
-          </div>
-        ))}
+        {eventsError ? (
+          <p className="quiet">Could not reach the events list just now.</p>
+        ) : dayEvents.length === 0 ? (
+          <p className="quiet">
+            {syncedAt
+              ? `Nothing on file for ${isToday ? 'today' : 'that day'}${prefs.pepper ? ' that takes a dog' : ''}. Last checked ${new Date(syncedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}.`
+              : 'The events list has not been filled yet.'}
+          </p>
+        ) : (
+          <>
+            {dayEvents.slice(0, 4).map(e => <EventRow key={e.id} e={e} dateStr={dateStr} pepper={prefs.pepper} />)}
+            {dayEvents.length > 4 && (
+              <button className="btn quiet small" style={{ marginTop: 12 }} onClick={goWhatsOn}>
+                All {dayEvents.length} for this day
+              </button>
+            )}
+          </>
+        )}
       </section>
 
       {out.length > 0 && (
@@ -139,17 +188,4 @@ function Alt({ r, label, open }) {
       <p>{whySentence(r)}</p>
     </button>
   )
-}
-
-function fmtTime(iso) {
-  const d = new Date(iso)
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-}
-
-function isoDate(d) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-
-function shift(days) {
-  const d = new Date(); d.setDate(d.getDate() + days); return isoDate(d)
 }

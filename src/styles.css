@@ -125,11 +125,14 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; letter-spacing: -0.01e
 .sec h2 { font-size: 22px; }
 
 /* Events */
-.event { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--rule); }
+.event { display: flex; gap: 12px; padding: 14px 0; border-top: 1px solid var(--rule); }
 .event:last-child { border-bottom: 1px solid var(--rule); }
-.event .when { flex: 0 0 56px; font-family: var(--serif); font-size: 14px; color: var(--ink-2); }
-.event .t { font-weight: 600; font-size: 15px; }
-.event .d { font-size: 13px; color: var(--ink-2); }
+.event .when { flex: 0 0 58px; font-family: var(--serif); font-size: 14px; color: var(--rust); padding-top: 1px; }
+.event .ebody { min-width: 0; }
+.event .t { font-weight: 600; font-size: 16px; line-height: 1.25; }
+.event .d { font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+.event .n { font-size: 14px; color: var(--ink-2); margin-top: 6px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.event .lnk { display: inline-block; font-size: 13px; color: var(--blue); margin-top: 6px; }
 .quiet { font-size: 14px; color: var(--ink-3); font-style: italic; font-family: var(--serif); }
 
 /* Not today list */
@@ -192,11 +195,36 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; letter-spacing: -0.01e
 .sheet .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .sheet input[type=date], .sheet textarea { font: inherit; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 8px; background: #fff; width: 100%; }
 
-/* Ours */
-.ours .stat { font-family: var(--serif); font-size: 44px; line-height: 1; }
-.ours .stat small { font-size: 16px; color: var(--ink-3); font-family: var(--sans); }
-.bar { height: 6px; background: var(--paper-2); border-radius: 3px; margin: 10px 0 18px; overflow: hidden; }
+/* Progress bar */
+.bar { height: 5px; background: var(--paper-2); border-radius: 3px; margin: 7px 0 0; overflow: hidden; }
 .bar i { display: block; height: 100%; background: var(--rust); }
+
+/* Date strip */
+.strip {
+  display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+  margin: 16px -20px 0; padding: 2px 20px 6px; scrollbar-width: none;
+}
+.strip::-webkit-scrollbar { display: none; }
+.day {
+  position: relative; flex: 0 0 auto; min-width: 62px; border: 1px solid var(--rule); background: transparent;
+  border-radius: 12px; padding: 8px 10px 7px; text-align: center; line-height: 1.2; transition: all .12s ease;
+}
+.day .dl { display: block; font-size: 12px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+.day .dw { display: block; font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+.day.on { background: var(--ink); border-color: var(--ink); }
+.day.on .dl { color: var(--paper); }
+.day.on .dw { color: var(--paper-2); }
+.day.wknd { border-style: dashed; }
+.day .dc {
+  position: absolute; top: -5px; right: -4px; min-width: 16px; height: 16px; border-radius: 999px;
+  background: var(--rust); color: #fff; font-size: 10px; font-weight: 700; line-height: 16px; padding: 0 4px;
+}
+.day.on .dc { background: var(--rust); }
+
+/* Progress line on the journeys list */
+.progress { margin-top: 14px; }
+.progress .pnum { font-size: 13px; color: var(--ink-2); }
+.progress .pnum b { font-family: var(--serif); font-size: 17px; color: var(--ink); }
 
 /* Tab bar */
 .tabs {

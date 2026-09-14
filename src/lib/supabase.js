@@ -34,14 +34,23 @@ export async function loadProgress(db) {
   return map
 }
 
-export async function loadEvents(db, dateStr) {
-  const start = new Date(dateStr + 'T00:00:00')
-  const end = new Date(dateStr + 'T23:59:59')
-  const { data } = await db.from('events').select('*')
+export async function loadEvents(db, fromDate, toDate) {
+  const start = new Date(fromDate + 'T00:00:00')
+  const end = new Date(toDate + 'T23:59:59')
+  const { data, error } = await db.from('events').select('*')
     .lte('starts_at', end.toISOString())
     .or(`ends_at.gte.${start.toISOString()},ends_at.is.null`)
     .order('starts_at')
-  return (data || []).filter(e => e.ends_at || e.starts_at >= start.toISOString())
+  if (error) return { events: [], error }
+  const events = (data || []).filter(e => e.ends_at || new Date(e.starts_at) >= start)
+  return { events, error: null }
+}
+
+// When were the events last refreshed? Used so the app never claims
+// "nothing on" when the truth is "nobody has looked yet".
+export async function loadEventsSyncedAt(db) {
+  const { data } = await db.from('events').select('created_at').order('created_at', { ascending: false }).limit(1).maybeSingle()
+  return data?.created_at || null
 }
 
 export async function setProgress(db, familyId, journeyId, patch) {

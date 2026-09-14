@@ -1,3 +1,5 @@
+import { timeLabel, runsUntil, isLongRun, DOG_LABEL } from './lib/events.js'
+
 export function DogBadge({ j, short }) {
   const v = j.dog.verdict
   const label = v === 'great' ? 'Pepper: yes' : v === 'workable' ? 'Pepper: partly' : 'No dogs'
@@ -37,8 +39,29 @@ export function num(id) {
   return String(id).padStart(2, '0')
 }
 
+export function EventRow({ e, dateStr, pepper }) {
+  const long = isLongRun(e)
+  const until = runsUntil(e)
+  const bits = [e.venue, e.area].filter(Boolean).join(', ')
+  const flags = []
+  if (e.free === true) flags.push('free')
+  if (e.dog && e.dog !== 'unknown') flags.push(DOG_LABEL[e.dog])
+  else if (pepper) flags.push('dog rule unknown')
+  return (
+    <div className="event">
+      <div className="when">{long ? 'on now' : timeLabel(e, dateStr)}</div>
+      <div className="ebody">
+        <div className="t">{e.title}</div>
+        <div className="d">{bits}{flags.length ? ' · ' + flags.join(' · ') : ''}{long && until ? ` · until ${until}` : ''}</div>
+        {e.note && <div className="n">{e.note}</div>}
+        {e.url && <a className="lnk" href={e.url} target="_blank" rel="noreferrer">Details</a>}
+      </div>
+    </div>
+  )
+}
+
 export function TabBar({ tab, go }) {
-  const tabs = [['today', 'Today'], ['journeys', 'Journeys'], ['ours', 'Ours']]
+  const tabs = [['today', 'Today'], ['journeys', 'The 20'], ['whatson', "What's on"]]
   return (
     <nav className="tabs">
       <div className="in">

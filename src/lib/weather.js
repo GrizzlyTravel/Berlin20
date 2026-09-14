@@ -6,7 +6,7 @@ export async function fetchWeather() {
     latitude: LAT, longitude: LNG,
     hourly: 'temperature_2m,precipitation_probability,precipitation',
     daily: 'temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,sunset,sunrise,weather_code',
-    timezone: 'Europe/Berlin', forecast_days: 3,
+    timezone: 'Europe/Berlin', forecast_days: 10,
   })
   const res = await fetch('https://api.open-meteo.com/v1/forecast?' + p.toString())
   if (!res.ok) throw new Error('weather ' + res.status)

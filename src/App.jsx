@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from 'react'
 import { journeys, bySlug } from './data/journeys.js'
-import { readFamilyKey, makeClient, loadFamily, loadProgress, loadEvents, setProgress, clearProgress, logFeedback } from './lib/supabase.js'
-import { fetchWeather, todayStr } from './lib/weather.js'
+import { readFamilyKey, makeClient, loadFamily, loadProgress, loadEvents, loadEventsSyncedAt, setProgress, clearProgress, logFeedback } from './lib/supabase.js'
+import { fetchWeather } from './lib/weather.js'
+import { isoDate } from './lib/events.js'
 import Today from './views/Today.jsx'
 import Journeys from './views/Journeys.jsx'
 import Detail from './views/Detail.jsx'
-import Ours from './views/Ours.jsx'
+import WhatsOn from './views/WhatsOn.jsx'
 import { TabBar } from './components.jsx'
 
 const DEFAULT_PREFS = { elle: true, pepper: false, hours: 5, mood: 'surprise', date: null }
@@ -21,11 +22,13 @@ function useHash() {
 }
 
 export default function App() {
-  const [familyKey, setFamilyKey] = useState(() => readFamilyKey())
+  const [familyKey] = useState(() => readFamilyKey())
   const [db] = useState(() => makeClient(familyKey))
   const [family, setFamily] = useState(null)
   const [progress, setProg] = useState({})
   const [events, setEvents] = useState([])
+  const [eventsError, setEventsError] = useState(null)
+  const [syncedAt, setSyncedAt] = useState(null)
   const [weather, setWeather] = useState(undefined)
   const [prefs, setPrefsRaw] = useState(() => {
     try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem('b20_prefs') || '{}'), date: null } } catch { return DEFAULT_PREFS }
@@ -39,20 +42,17 @@ export default function App() {
     return n
   }), [])
 
-  useEffect(() => {
-    fetchWeather().then(setWeather).catch(() => setWeather(null))
-  }, [])
+  useEffect(() => { fetchWeather().then(setWeather).catch(() => setWeather(null)) }, [])
 
   useEffect(() => {
     if (!db) return
     loadFamily(db).then(f => { if (!f) { setToast('That family key is not recognised.'); return } setFamily(f) })
     loadProgress(db).then(setProg)
+    loadEventsSyncedAt(db).then(setSyncedAt)
+    const from = isoDate(new Date())
+    const to = new Date(); to.setDate(to.getDate() + 10)
+    loadEvents(db, from, isoDate(to)).then(({ events, error }) => { setEvents(events); setEventsError(error) })
   }, [db])
-
-  useEffect(() => {
-    if (!db) return
-    loadEvents(db, prefs.date || todayStr()).then(setEvents)
-  }, [db, prefs.date])
 
   useEffect(() => { window.scrollTo(0, 0) }, [hash])
   useEffect(() => { if (toast) { const t = setTimeout(() => setToast(null), 2200); return () => clearTimeout(t) } }, [toast])
@@ -77,7 +77,7 @@ export default function App() {
     await clearProgress(db, j.id); await refresh()
   }
   async function notToday(id) {
-    if (db && family) logFeedback(db, family.id, 'not_today', id, { prefs, date: prefs.date || todayStr() })
+    if (db && family) logFeedback(db, family.id, 'not_today', id, { prefs, date: prefs.date || isoDate(new Date()) })
   }
 
   if (!familyKey) return <Gate onKey={k => { localStorage.setItem('b20_family_key', k); window.location.reload() }} />
@@ -91,11 +91,13 @@ export default function App() {
   } else if (hash.startsWith('#/journeys')) {
     tab = 'journeys'
     view = <Journeys journeys={journeys} progress={progress} open={open} />
-  } else if (hash.startsWith('#/ours')) {
-    tab = 'ours'
-    view = <Ours journeys={journeys} progress={progress} open={open} />
+  } else if (hash.startsWith('#/whatson')) {
+    tab = 'whatson'
+    view = <WhatsOn events={events} eventsError={eventsError} syncedAt={syncedAt} prefs={prefs} setPrefs={setPrefs} />
   } else {
-    view = <Today journeys={journeys} weather={weather} progress={progress} events={events} prefs={prefs} setPrefs={setPrefs} open={open} onNotToday={notToday} onSetDate={d => setPrefs(p => ({ ...p, date: d }))} />
+    view = <Today journeys={journeys} weather={weather} progress={progress} events={events} eventsError={eventsError} syncedAt={syncedAt}
+      prefs={prefs} setPrefs={setPrefs} open={open} onNotToday={notToday}
+      onSetDate={d => setPrefs(p => ({ ...p, date: d }))} goWhatsOn={() => go('#/whatson')} />
   }
 
   return (
