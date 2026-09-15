@@ -1,13 +1,18 @@
 import { useMemo, useState } from 'react'
-import { forDate, isLongRun, onDate, runsUntil } from '../lib/events.js'
-import { EventRow } from '../components.jsx'
+import { forDate, isLongRun, onDate, runsUntil, bookNow, shortDay } from '../lib/events.js'
+import { EventRow, BookingBadge } from '../components.jsx'
 import { dayList } from './Today.jsx'
 
-export default function WhatsOn({ events, eventsError, syncedAt, prefs, setPrefs }) {
+export default function WhatsOn({ events, eventsError, syncedAt, prefs, setPrefs, go }) {
   const [f, setF] = useState({ free: false, outdoor: false })
   const days = useMemo(() => dayList(10), [])
 
   const match = e => (!f.free || e.free === true) && (!f.outdoor || e.outdoor === true)
+
+  const toBook = useMemo(
+    () => bookNow(events, { pepper: prefs.pepper, elle: prefs.elle }).slice(0, 4),
+    [events, prefs.pepper, prefs.elle]
+  )
 
   const longRuns = useMemo(() => events.filter(e =>
     isLongRun(e) && onDate(e, days[0]) && !(prefs.pepper && e.dog === 'no') && match(e)
@@ -39,6 +44,21 @@ export default function WhatsOn({ events, eventsError, syncedAt, prefs, setPrefs
 
       {eventsError && <p className="quiet" style={{ marginTop: 16 }}>Could not reach the events list just now.</p>}
 
+      {toBook.length > 0 && (
+        <section className="sec booklist">
+          <div className="eyebrow rust">Worth booking</div>
+          {toBook.map(e => (
+            <div className="bookrow" key={e.id}>
+              <div className="bbody">
+                <div className="t">{e.title}</div>
+                <div className="d">{shortDay(e.starts_at)}{e.venue ? ' · ' + e.venue : ''}</div>
+              </div>
+              <BookingBadge e={e} />
+            </div>
+          ))}
+        </section>
+      )}
+
       {!eventsError && total === 0 && longRuns.length === 0 && (
         <p className="quiet" style={{ marginTop: 16 }}>
           Nothing matches those filters{prefs.pepper ? ' with Pepper along' : ''}.
@@ -65,7 +85,7 @@ export default function WhatsOn({ events, eventsError, syncedAt, prefs, setPrefs
       {byDay.map(({ date, items }) => (
         <section className="sec" key={date}>
           <div className="eyebrow">{dayHeading(date, days[0])}</div>
-          {items.map(e => <EventRow key={e.id} e={e} dateStr={date} pepper={prefs.pepper} />)}
+          {items.map(e => <EventRow key={e.id} e={e} dateStr={date} pepper={prefs.pepper} go={go} />)}
         </section>
       ))}
     </div>

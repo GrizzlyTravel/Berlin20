@@ -53,6 +53,13 @@ export async function loadEventsSyncedAt(db) {
   return data?.created_at || null
 }
 
+// The week-ahead plan, written by the Monday scheduled task. Null when no plan
+// has been generated yet, which the Today view handles by saying nothing.
+export async function loadPlan(db) {
+  const { data } = await db.from('plans').select('*').order('generated_at', { ascending: false }).limit(1).maybeSingle()
+  return data || null
+}
+
 export async function setProgress(db, familyId, journeyId, patch) {
   const { data: existing } = await db.from('progress').select('id').eq('journey_id', journeyId).limit(1).maybeSingle()
   const row = { family_id: familyId, journey_id: journeyId, updated_at: new Date().toISOString(), ...patch }

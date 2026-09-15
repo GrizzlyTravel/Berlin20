@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { journeys, bySlug } from './data/journeys.js'
-import { readFamilyKey, makeClient, loadFamily, loadProgress, loadEvents, loadEventsSyncedAt, setProgress, clearProgress, logFeedback } from './lib/supabase.js'
+import { readFamilyKey, makeClient, loadFamily, loadProgress, loadEvents, loadEventsSyncedAt, loadPlan, setProgress, clearProgress, logFeedback } from './lib/supabase.js'
 import { fetchWeather } from './lib/weather.js'
 import { isoDate } from './lib/events.js'
 import Today from './views/Today.jsx'
@@ -29,6 +29,7 @@ export default function App() {
   const [events, setEvents] = useState([])
   const [eventsError, setEventsError] = useState(null)
   const [syncedAt, setSyncedAt] = useState(null)
+  const [plan, setPlan] = useState(null)
   const [weather, setWeather] = useState(undefined)
   const [prefs, setPrefsRaw] = useState(() => {
     try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem('b20_prefs') || '{}'), date: null } } catch { return DEFAULT_PREFS }
@@ -49,6 +50,7 @@ export default function App() {
     loadFamily(db).then(f => { if (!f) { setToast('That family key is not recognised.'); return } setFamily(f) })
     loadProgress(db).then(setProg)
     loadEventsSyncedAt(db).then(setSyncedAt)
+    loadPlan(db).then(setPlan).catch(() => setPlan(null))
     const from = isoDate(new Date())
     const to = new Date(); to.setDate(to.getDate() + 10)
     loadEvents(db, from, isoDate(to)).then(({ events, error }) => { setEvents(events); setEventsError(error) })
@@ -90,13 +92,13 @@ export default function App() {
     view = <Detail j={j} prog={progress[j.id]} back={() => window.history.length > 1 ? window.history.back() : go('#/journeys')} onDone={f => markDone(j, f)} onSave={() => save(j)} onClear={() => clear(j)} />
   } else if (hash.startsWith('#/journeys')) {
     tab = 'journeys'
-    view = <Journeys journeys={journeys} progress={progress} open={open} />
+    view = <Journeys journeys={journeys} progress={progress} open={open} events={events} prefs={prefs} />
   } else if (hash.startsWith('#/whatson')) {
     tab = 'whatson'
-    view = <WhatsOn events={events} eventsError={eventsError} syncedAt={syncedAt} prefs={prefs} setPrefs={setPrefs} />
+    view = <WhatsOn events={events} eventsError={eventsError} syncedAt={syncedAt} prefs={prefs} setPrefs={setPrefs} go={go} />
   } else {
-    view = <Today journeys={journeys} weather={weather} progress={progress} events={events} eventsError={eventsError} syncedAt={syncedAt}
-      prefs={prefs} setPrefs={setPrefs} open={open} onNotToday={notToday}
+    view = <Today journeys={journeys} weather={weather} progress={progress} events={events} eventsError={eventsError} syncedAt={syncedAt} plan={plan}
+      prefs={prefs} setPrefs={setPrefs} open={open} onNotToday={notToday} go={go}
       onSetDate={d => setPrefs(p => ({ ...p, date: d }))} goWhatsOn={() => go('#/whatson')} />
   }
 

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { rank, whySentence } from '../engine.js'
 import { describe } from '../lib/weather.js'
 import { isoDate, feedForDate, countsByDate } from '../lib/events.js'
-import { DogBadge, KidBadge, EventRow, euro, hoursText, num } from '../components.jsx'
+import { DogBadge, KidBadge, EventRow, PlanCard, euro, hoursText, num } from '../components.jsx'
 
 const MOODS = [
   ['surprise', 'Surprise us'], ['outdoors', 'Outdoors'], ['history', 'History'], ['museums', 'Museums'],
@@ -34,7 +34,7 @@ function nextSaturday() {
   return isoDate(d)
 }
 
-export default function Today({ journeys, weather, progress, events, eventsError, syncedAt, prefs, setPrefs, open, onNotToday, onSetDate, goWhatsOn }) {
+export default function Today({ journeys, weather, progress, events, eventsError, syncedAt, plan, prefs, setPrefs, open, onNotToday, onSetDate, goWhatsOn, go }) {
   const [skipped, setSkipped] = useState([])
   const days = useMemo(() => dayList(10), [])
   const todayStr = days[0]
@@ -70,6 +70,8 @@ export default function Today({ journeys, weather, progress, events, eventsError
         <h1>What should we do{isToday ? ' today' : dateStr === sat ? ' on Saturday' : ' then'}?</h1>
         <div className="wx">{w ? describe(w) : weather === null ? 'Weather unavailable right now.' : 'Checking the weather…'}</div>
       </div>
+
+      {isToday && <PlanCard plan={plan} go={go} />}
 
       <div className="strip">
         {days.map((d, i) => (
@@ -152,7 +154,7 @@ export default function Today({ journeys, weather, progress, events, eventsError
           </p>
         ) : (
           <>
-            {dayEvents.slice(0, 4).map(e => <EventRow key={e.id} e={e} dateStr={dateStr} pepper={prefs.pepper} />)}
+            {dayEvents.slice(0, 4).map(e => <EventRow key={e.id} e={e} dateStr={dateStr} pepper={prefs.pepper} go={go} />)}
             {dayEvents.length > 4 && (
               <button className="btn quiet small" style={{ marginTop: 12 }} onClick={goWhatsOn}>
                 All {dayEvents.length} for this day

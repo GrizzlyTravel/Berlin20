@@ -69,3 +69,57 @@ export function runsUntil(e) {
 }
 
 export const DOG_LABEL = { yes: 'dogs fine', no: 'no dogs', outdoor: 'dogs outside only', unknown: 'dog rule unknown' }
+
+export const BOOKING_LABEL = {
+  required: 'Book ahead',
+  advised: 'Book ahead',
+  sold_out: 'Sold out',
+  none: null,
+}
+
+// How many days until the booking deadline. Null when there is no deadline.
+export function daysToBook(e) {
+  if (!e.book_by) return null
+  const by = new Date(e.book_by + 'T23:59:59')
+  return Math.ceil((by - Date.now()) / 864e5)
+}
+
+// Things worth buying tickets for, soonest first. Sold-out rows are left out:
+// they still show on the event itself, but there is nothing to act on.
+export function bookNow(events, { pepper = false, elle = true } = {}) {
+  return events
+    .filter(e => e.booking === 'required' || e.booking === 'advised')
+    .filter(e => new Date(e.ends_at || e.starts_at) >= new Date())
+    .filter(e => !(pepper && e.dog === 'no'))
+    .filter(e => !(elle && e.kid === false))
+    .filter(e => !isLongRun(e))
+    .sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
+}
+
+// Which of the 20 does this event sit on?
+export function journeyIds(e) {
+  return Array.isArray(e.journey_ids) ? e.journey_ids : []
+}
+
+// Upcoming events grouped by journey id, for the reverse view in The 20.
+export function eventsByJourney(events, { pepper = false, elle = true } = {}) {
+  const out = {}
+  const now = new Date()
+  for (const e of events) {
+    if (pepper && e.dog === 'no') continue
+    if (elle && e.kid === false) continue
+    if (new Date(e.ends_at || e.starts_at) < now) continue
+    for (const id of journeyIds(e)) (out[id] ||= []).push(e)
+  }
+  for (const id of Object.keys(out)) {
+    out[id].sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
+  }
+  return out
+}
+
+// "Sat 19 Sep" for a plan entry or a booking deadline.
+export function shortDay(iso) {
+  if (!iso) return ''
+  const d = new Date(String(iso).length <= 10 ? iso + 'T12:00:00' : iso)
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+}
