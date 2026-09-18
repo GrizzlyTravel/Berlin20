@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { DogBadge, KidBadge, StatusBadge, num } from '../components.jsx'
-import { eventsByJourney, shortDay } from '../lib/events.js'
+import { eventsByJourney, whenLabel } from '../lib/events.js'
 
 export default function Journeys({ journeys, progress, open, events = [], prefs = {} }) {
   const [f, setF] = useState({ pepper: false, rain: false, free: false, elle: false, todo: false, done: false, saved: false, live: false })
@@ -68,8 +68,8 @@ export default function Journeys({ journeys, progress, open, events = [], prefs 
                   <div className="tl">{p?.status === 'done' && p.notes ? p.notes : j.tagline}</div>
                   {on.length > 0 && (
                     <div className="onnow">
-                      <b>{shortDay(on[0].starts_at)}</b> {on[0].title}
-                      {on.length > 1 && <span> and {on.length - 1} more this fortnight</span>}
+                      <b>{whenLabel(on[0])}</b> · {on[0].title}
+                      {on.length > 1 && <span> and {on.length - 1} more in the next month</span>}
                     </div>
                   )}
                   <div className="badges">

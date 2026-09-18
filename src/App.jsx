@@ -52,7 +52,9 @@ export default function App() {
     loadEventsSyncedAt(db).then(setSyncedAt)
     loadPlan(db).then(setPlan).catch(() => setPlan(null))
     const from = isoDate(new Date())
-    const to = new Date(); to.setDate(to.getDate() + 10)
+    // A month ahead: Today and What's on only read the first ten days, but The 20
+    // shows what is coming up on each journey, and that wants a longer view.
+    const to = new Date(); to.setDate(to.getDate() + 31)
     loadEvents(db, from, isoDate(to)).then(({ events, error }) => { setEvents(events); setEventsError(error) })
   }, [db])
 

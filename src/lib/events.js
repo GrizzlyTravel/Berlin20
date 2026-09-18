@@ -102,19 +102,46 @@ export function journeyIds(e) {
 }
 
 // Upcoming events grouped by journey id, for the reverse view in The 20.
-export function eventsByJourney(events, { pepper = false, elle = true } = {}) {
+// Two rules keep this honest. Nothing that has already finished, and nothing
+// that starts further out than the window, which is a month by default. An
+// exhibition that opened in May but runs until October is still upcoming, so
+// it sorts on today rather than on the day it opened.
+export function eventsByJourney(events, { pepper = false, elle = true, days = 30 } = {}) {
   const out = {}
   const now = new Date()
+  const horizon = new Date(now.getTime() + days * 864e5)
   for (const e of events) {
     if (pepper && e.dog === 'no') continue
     if (elle && e.kid === false) continue
     if (new Date(e.ends_at || e.starts_at) < now) continue
+    if (new Date(e.starts_at) > horizon) continue
     for (const id of journeyIds(e)) (out[id] ||= []).push(e)
   }
   for (const id of Object.keys(out)) {
-    out[id].sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
+    out[id].sort((a, b) => effectiveStart(a) - effectiveStart(b))
   }
   return out
+}
+
+// When does this event next matter to us? Today, if it is already running.
+export function effectiveStart(e) {
+  const s = new Date(e.starts_at)
+  const now = new Date()
+  return s < now ? now : s
+}
+
+export function isUnderWay(e) {
+  return new Date(e.starts_at) <= new Date()
+}
+
+// The short label in front of an event line: "On now" for something already
+// running, otherwise the day it starts.
+export function whenLabel(e) {
+  if (isUnderWay(e)) {
+    const u = runsUntil(e)
+    return u ? 'On now, to ' + u : 'On now'
+  }
+  return shortDay(e.starts_at)
 }
 
 // "Sat 19 Sep" for a plan entry or a booking deadline.
