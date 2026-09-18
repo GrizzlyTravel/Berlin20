@@ -123,7 +123,7 @@ export function PlanCard({ plan, go }) {
           {p.dog && <span className={`badge ${dogClass(p.dog)}`}>Pepper: {p.dog}</span>}
           {p.booking && p.booking !== 'none' && <span className="badge book">{p.booking}</span>}
         </div>
-        {j && <button className="btn rust small" onClick={() => go('#/j/' + j.slug)}>Show the route</button>}
+        {j && <button className="btn rust small" onClick={() => go('#/j/' + j.slug)}>See the plan</button>}
       </div>
 
       {book.length > 0 && (

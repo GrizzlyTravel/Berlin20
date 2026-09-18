@@ -124,7 +124,7 @@ export default function Today({ journeys, weather, progress, events, eventsError
             <ul className="caveats">{pick.caveats.slice(0, 3).map((c, i) => <li key={i}>{c}</li>)}</ul>
           )}
           <div className="actions">
-            <button className="btn rust" onClick={() => open(pick.journey)}>Show the route</button>
+            <button className="btn rust" onClick={() => open(pick.journey)}>See the plan</button>
             <button className="btn quiet" onClick={() => { setSkipped(s => [...s, pick.journey.id]); onNotToday?.(pick.journey.id) }}>Not feeling it</button>
           </div>
         </section>
