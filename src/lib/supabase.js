@@ -18,7 +18,7 @@ export function readFamilyKey() {
 }
 
 export function makeClient(familyKey) {
-  if (!SB_URL || !SB_KEY || !familyKey) return null
+  if (!SB_URL || !SB_KEY) return null
   return createClient(SB_URL, SB_KEY, { global: { headers: { 'x-family-key': familyKey } } })
 }
 
