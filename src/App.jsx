@@ -84,7 +84,7 @@ export default function App() {
     if (db && family) logFeedback(db, family.id, 'not_today', id, { prefs, date: prefs.date || isoDate(new Date()) })
   }
 
-  if (!familyKey) return <Gate onKey={k => { localStorage.setItem('b20_family_key', k); window.location.reload() }} />
+
 
   let tab = 'today', view
   const m = hash.match(/^#\/j\/([a-z0-9-]+)/)
