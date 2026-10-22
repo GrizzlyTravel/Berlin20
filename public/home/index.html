@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Hawes Home Berlin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&display=swap">
+<style>
+:root{
+  --bg:#f2f3f7; --surface:#ffffff; --raised:#f6f7fa; --fg:#0f1524; --line:#d9dde6; --fill:#e9ecf2;
+  --tint:#2456a6; --on-tint:#ffffff; --enamel:#1c3f7a; --on-enamel:#f7f3e6;
+  --good:#1f8a4c; --on-good:#ffffff; --warn:#b26a00; --bad:#d92d20; --on-bad:#ffffff;
+  --bar:rgba(242,243,247,.9);
+  --shadow:0 1px 2px rgba(15,21,36,.06),0 6px 20px rgba(15,21,36,.06);
+  --ui:-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+  --display:-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto, sans-serif;
+  --plate:"Barlow Condensed", "DIN Condensed", "Arial Narrow", sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#000000; --surface:#1c1c20; --raised:#26262c; --fg:#f4f5f8; --line:#34343c; --fill:#2c2c33;
+  --tint:#5b8fe6; --on-tint:#06101f; --enamel:#2f62b8; --on-enamel:#fbf8ee;
+  --good:#3ccf74; --on-good:#04170b; --warn:#ffb340; --bad:#ff5b4f; --on-bad:#1a0200;
+  --bar:rgba(18,18,22,.9); --shadow:none; color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:17px;line-height:1.47;-webkit-font-smoothing:antialiased;padding-bottom:40px}
+p{margin:0}
+a{color:var(--tint);font-weight:600}
+button{font-family:var(--ui);color:inherit}
+:focus-visible{outline:3px solid var(--tint);outline-offset:2px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+.bar{position:sticky;top:0;z-index:20;background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.bar-in{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:16px;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1 1 auto}
+.appicon{flex:none;width:38px;height:38px;border-radius:10px;background:var(--enamel);color:var(--on-enamel);display:grid;place-items:center;font-family:var(--plate);font-weight:700;font-size:24px;outline:1.5px solid var(--on-enamel);outline-offset:-5px}
+.brand-name{font-family:var(--display);font-weight:700;font-size:19px;white-space:nowrap}
+.me{border:0;background:var(--fill);color:var(--tint);font-weight:600;font-size:15px;padding:7px 12px;border-radius:999px;cursor:pointer;white-space:nowrap}
+
+.tabs{display:flex;gap:2px;background:var(--fill);border-radius:10px;padding:3px}
+.tab{position:relative;border:0;background:transparent;border-radius:8px;padding:7px 14px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--fg);white-space:nowrap}
+.tab svg{display:none}
+.tab[aria-selected="true"]{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.badge{min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--bad);color:var(--on-bad);font-size:13px;font-weight:700;display:inline-grid;place-items:center}
+.badge:empty{display:none}
+.badge.quiet{background:var(--fill);color:var(--fg)}
+@media (max-width:760px){
+  body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;border-radius:0;gap:0;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--line)}
+  .tab{flex:1 1 0;flex-direction:column;gap:3px;padding:4px 2px;font-size:12px;background:transparent!important;box-shadow:none!important}
+  .tab svg{display:block;width:26px;height:26px}
+  .tab[aria-selected="true"]{color:var(--tint)}
+  .tab .badge{position:absolute;top:0;left:calc(50% + 6px);height:18px;min-width:18px;font-size:12px}
+  .tab .badge.quiet{display:none}
+}
+
+main{max-width:1120px;margin:0 auto;padding-block:20px 0}
+.view{display:grid;gap:18px}
+.large{font-family:var(--display);font-size:clamp(30px,6vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.1;margin:6px 0 0}
+.lede{max-width:64ch}
+.widgets{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:12px}
+.widget{background:var(--surface);border-radius:20px;padding:16px 18px;box-shadow:var(--shadow);display:grid;gap:2px;align-content:start;min-width:0}
+.widget .big{font-family:var(--display);font-size:40px;font-weight:700;line-height:1.05}
+.widget .lbl{font-weight:600}
+.widget.days{background:var(--enamel);color:var(--on-enamel);outline:1.5px solid var(--on-enamel);outline-offset:-7px}
+.widget.days .big{font-family:var(--plate);font-size:56px;line-height:.95}
+@media (max-width:760px){.widgets{grid-template-columns:repeat(3,1fr);gap:10px}.widget{padding:12px 14px;border-radius:18px}.widget .big{font-size:30px}.widget.days{grid-column:1/-1;grid-template-columns:auto 1fr;align-items:center;gap:14px}.widget.days .big{font-size:52px}}
+.alert{background:var(--good);color:var(--on-good);border-radius:16px;padding:14px 18px;font-weight:600;display:grid;gap:4px}
+.err{background:var(--bad);color:var(--on-bad);border-radius:12px;padding:10px 14px;font-weight:600}
+
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,460px),1fr));gap:16px;align-items:start}
+.list > .more, .list > .empty{grid-column:1/-1}
+.card{background:var(--surface);border-radius:22px;padding:18px;display:grid;gap:14px;min-width:0;box-shadow:var(--shadow)}
+.card-head{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
+.ring{--p:0;--c:var(--tint);width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--fill) 0)}
+.ring span{width:46px;height:46px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:18px}
+.ring.hi{--c:var(--good)} .ring.lo{--c:var(--warn)}
+.ring.none{background:var(--fill)}
+.eyebrow{font-weight:600;color:var(--tint);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.title{font-family:var(--display);font-weight:700;font-size:21px;line-height:1.2;margin:2px 0 0}
+.addr{margin-top:2px}
+.fit{font-weight:700;padding:1px 10px;border-radius:999px;border:1.5px solid currentColor;font-size:15px}
+.fit.strong{color:var(--good)} .fit.maybe{color:var(--warn)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:var(--fill);border-radius:999px;padding:3px 11px;font-size:15px;font-weight:600}
+.tag.neg{background:transparent;color:var(--bad);box-shadow:inset 0 0 0 1.5px var(--bad)}
+.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:0}
+.spec{background:var(--raised);border-radius:12px;padding:9px 12px;min-width:0}
+.spec dt{font-weight:600;font-size:15px}
+.spec dd{margin:0;font-weight:700;font-size:18px;overflow-wrap:anywhere}
+.lines{margin:0;display:grid;gap:6px}
+.line{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:baseline}
+.line dt{font-weight:600}
+.line dd{margin:0;font-weight:700}
+@media (max-width:520px){.line{grid-template-columns:1fr;gap:0}}
+.take{background:var(--raised);border-radius:16px;padding:14px 16px}
+.take b{color:var(--tint);margin-right:4px}
+.more-info summary{cursor:pointer;font-weight:600;color:var(--tint);list-style:none}
+.more-info summary::-webkit-details-marker{display:none}
+.more-info .body{display:grid;gap:8px;margin-top:8px}
+.concerns b{color:var(--bad)}
+.photos{display:inline-flex;align-items:center;gap:8px;background:var(--fill);color:var(--tint);border-radius:999px;padding:10px 18px;font-weight:600;text-decoration:none}
+.decide{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vbtn{border:0;border-radius:14px;padding:14px;font-weight:700;font-size:17px;cursor:pointer;background:var(--fill);color:var(--fg)}
+.vbtn.on.yes{background:var(--good);color:var(--on-good)}
+.vbtn.on.no{background:var(--bad);color:var(--on-bad)}
+.vbtn:disabled{opacity:.6}
+.hint{font-size:15px}
+select{font:inherit;font-weight:600;padding:9px 12px;border-radius:12px;border:0;background:var(--fill);color:var(--fg)}
+.votes{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.vote{border-radius:999px;padding:2px 11px;font-weight:600;font-size:15px;background:var(--fill)}
+.vote.yes{color:var(--good)} .vote.no{color:var(--bad)}
+.both{background:var(--good);color:var(--on-good);border-radius:999px;padding:2px 11px;font-weight:700;font-size:15px}
+.more{justify-self:center;font-size:17px;font-weight:600;padding:12px 22px;border-radius:999px;border:0;background:var(--tint);color:var(--on-tint);cursor:pointer}
+.undo{border:0;border-radius:14px;padding:12px 14px;font-weight:700;font-size:16px;background:var(--fill);color:var(--tint);cursor:pointer;justify-self:start}
+.empty{background:var(--surface);border-radius:22px;padding:24px;box-shadow:var(--shadow)}
+.criteria{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.crit{background:var(--surface);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);display:grid;gap:4px}
+.crit b{color:var(--tint)}
+.plan{background:var(--surface);border-radius:20px;box-shadow:var(--shadow);padding:2px 18px}
+.step{display:grid;grid-template-columns:120px 1fr;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+.step:last-child{border-bottom:0}
+.step .when{font-weight:700;color:var(--tint)}
+.sub-h{font-family:var(--display);font-size:22px;font-weight:700;margin:8px 0 0}
+@media (max-width:520px){.step{grid-template-columns:1fr;gap:2px}.title{font-size:20px}}
+
+.pick{position:fixed;inset:0;z-index:50;background:var(--bg);display:grid;place-items:center;padding:24px}
+.pick-in{max-width:420px;width:100%;display:grid;gap:16px;text-align:center}
+.pick h1{font-family:var(--display);font-size:32px;margin:0}
+.pick button{border:0;border-radius:18px;padding:22px;font-size:22px;font-weight:700;background:var(--tint);color:var(--on-tint);cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="pick" id="pick" hidden>
+  <div class="pick-in">
+    <span class="appicon" style="justify-self:center;width:64px;height:64px;font-size:40px;border-radius:16px">H</span>
+    <h1>Who's voting?</h1>
+    <p>Tap your name. This phone will remember it.</p>
+    <button data-who="franziska">I'm Franziska</button>
+    <button data-who="stefan">I'm Stefan</button>
+  </div>
+</div>
+
+<header class="bar">
+  <div class="bar-in gut">
+    <div class="brand"><span class="appicon" aria-hidden="true">H</span><span class="brand-name">Hawes Home</span></div>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" data-tab="call" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg>Your call<span class="badge" id="nNew"></span></button>
+      <button class="tab" role="tab" data-tab="play" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m11 12 8-8"/><path d="m16 7 2 2"/><path d="m18 5 2 2"/></svg>In play<span class="badge quiet" id="nPlay"></span></button>
+      <button class="tab" role="tab" data-tab="buy" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l10 10-8 8L3 12z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg>Buying<span class="badge quiet" id="nBuy"></span></button>
+      <button class="tab" role="tab" data-tab="plan" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16"/><path d="M9 3v4"/><path d="M15 3v4"/></svg>Plan</button>
+      <button class="tab" role="tab" data-tab="passed" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10h14V9"/><path d="M10 13h4"/></svg>Passed<span class="badge quiet" id="nPassed"></span></button>
+    </nav>
+    <button class="me" id="meBtn" hidden></button>
+  </div>
+</header>
+
+<main class="gut">
+  <section class="view" data-panel="call">
+    <h1 class="large">Your call</h1>
+    <div class="alert" id="bothAlert" hidden></div>
+    <p class="err" id="err" hidden></p>
+    <div class="widgets">
+      <div class="widget days"><div class="big" id="days">–</div><div class="lbl">days until we're out of Bötzowstraße 31 on March 2</div></div>
+      <div class="widget"><div class="big" id="sNew">0</div><div class="lbl">waiting on you</div></div>
+      <div class="widget"><div class="big" id="sPlay">0</div><div class="lbl">in play</div></div>
+      <div class="widget"><div class="big" id="sBuy">0</div><div class="lbl">to buy</div></div>
+    </div>
+    <p id="updated"></p>
+    <p class="lede">Rentals you haven't voted on yet, best first. Tap Yes or No. When you both say Yes, it moves to In play and Claude drafts the application.</p>
+    <div class="list" id="newList"><div class="empty">Loading…</div></div>
+    <h2 class="sub-h" id="mineHead" hidden>You said yes, waiting on the other vote</h2>
+    <div class="list" id="mineList" hidden></div>
+  </section>
+
+  <section class="view" data-panel="play" hidden>
+    <h1 class="large">In play</h1>
+    <p class="lede">Flats you both said Yes to, and where each one stands.</p>
+    <div class="list" id="playList"></div>
+  </section>
+
+  <section class="view" data-panel="buy" hidden>
+    <h1 class="large">Buying</h1>
+    <p class="lede">Empty 4-room flats and raw top-floor spaces for sale.</p>
+    <div class="list" id="buyList"></div>
+    <h2 class="sub-h" id="buyMineHead" hidden>You said yes, waiting on the other vote</h2>
+    <div class="list" id="buyMineList" hidden></div>
+  </section>
+
+  <section class="view" data-panel="plan" hidden>
+    <h1 class="large">The plan</h1>
+    <h2 class="sub-h">What we're looking for</h2>
+    <div class="criteria" id="criteria"></div>
+    <h2 class="sub-h">Steps to March 2</h2>
+    <div class="plan" id="plan"></div>
+  </section>
+
+  <section class="view" data-panel="passed" hidden>
+    <h1 class="large">Passed</h1>
+    <p class="lede">Everything either of you said no to. One no is final. Undo puts a listing back in Your call.</p>
+    <div class="list" id="passedList"></div>
+  </section>
+</main>
+
+<script>
+const API = "https://ywxfxtttiqmvwrtkbmen.supabase.co/rest/v1";
+const KEY = "sb_publishable_C95ACEX_N73wLyyYARV65A_g9i3YZT4";
+const H = {apikey: KEY, "Content-Type": "application/json"};
+const MOVE_OUT = new Date("2027-03-02T00:00:00+01:00");
+const NAMES = {stefan: "Stefan", franziska: "Franziska"};
+const STATUS = {new:"New", applied:"Applied", viewing:"Viewing booked", waiting:"Waiting to hear", offer:"Offer / contract", dead:"Gone"};
+const NEG_TAGS = ["Over budget","Far out","No dogs","Stale listing","Tenanted","Small kitchen","Furnished"];
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const eur = n => (n == null || n === "") ? null : "€" + Number(n).toLocaleString("de-DE");
+
+let me = null;
+try { me = localStorage.getItem("voter"); } catch(e) {}
+let rows = [];
+let showNew = 5, showBuy = 5;
+
+function setMe(w){
+  me = w;
+  try { localStorage.setItem("voter", w); } catch(e) {}
+  $("pick").hidden = true;
+  $("meBtn").hidden = false;
+  $("meBtn").textContent = NAMES[w] + " · switch";
+  render();
+}
+document.querySelectorAll("[data-who]").forEach(b => b.addEventListener("click", () => setMe(b.dataset.who)));
+$("meBtn").addEventListener("click", () => { $("pick").hidden = false; });
+if (me && NAMES[me]) setMe(me); else $("pick").hidden = false;
+
+function renderDays(){ $("days").textContent = Math.max(0, Math.ceil((MOVE_OUT - new Date()) / 86400000)); }
+renderDays();
+
+function tally(l){
+  const v = (l.votes && typeof l.votes === "object") ? l.votes : {};
+  const ids = Object.keys(v).filter(k => v[k] === "yes" || v[k] === "no");
+  return {v, ids, yes: ids.filter(k => v[k] === "yes").length, no: ids.filter(k => v[k] === "no").length};
+}
+function voteLine(l){
+  const t = tally(l);
+  if (!t.ids.length) return "";
+  const chips = t.ids.map(id => `<span class="vote ${t.v[id]}">${esc(id === me ? "You" : (NAMES[id] || id))}: ${t.v[id] === "yes" ? "Yes" : "No"}</span>`).join("");
+  const state = t.yes >= 2 ? `<span class="both">You both said yes</span>` : (t.yes === 1 && !t.no ? `<span>Waiting for the other vote.</span>` : "");
+  return `<div class="votes">${chips}${state}</div>`;
+}
+
+function card(id, l, mode, rank){
+  const buy = l.kind === "buy";
+  const spec = (k, v) => v ? `<div class="spec"><dt>${k}</dt><dd>${esc(v)}</dd></div>` : "";
+  const allIn = buy ? (l.totalCost || l.price) : null;
+  const specs = [
+    buy ? spec(l.totalCost ? "All-in cost" : "Price", eur(allIn)) : spec("Warm rent", eur(l.warmRent)),
+    buy ? spec("Per m²", allIn && l.sqm ? eur(Math.round(allIn / l.sqm)) : null) : spec("Cold rent", eur(l.coldRent)),
+    spec("Size", l.sqm && `${l.sqm} m²`),
+    spec("Rooms", l.rooms)
+  ].join("");
+  const line = (k, v) => v ? `<div class="line"><dt>${k}</dt><dd>${esc(v)}</dd></div>` : "";
+  const lines = [line("To school", l.commute), line("Available", l.available), line("Apply by", l.deadline)].join("");
+  const s = typeof l.score === "number" ? l.score : null;
+  const ring = s == null ? `<div class="ring none"><span>–</span></div>`
+    : `<div class="ring ${s >= 85 ? "hi" : s >= 65 ? "" : "lo"}" style="--p:${s}" aria-label="Fit score ${s} of 100"><span>${s}</span></div>`;
+  const fit = l.fit ? `<span class="fit ${l.fit === "strong" ? "strong" : "maybe"}">${l.fit === "strong" ? "Strong fit" : "Maybe"}</span>` : "";
+  const eyebrow = [rank ? `<span>#${rank}</span>` : "", l.area ? `<span>${esc(l.area)}</span>` : "", fit].join("");
+  const link = l.url ? `<a class="photos" href="${esc(l.url)}" target="_blank" rel="noopener">See photos ↗</a>` : "";
+  const tags = Array.isArray(l.tags) && l.tags.length ? `<div class="tags">${l.tags.map(t => `<span class="tag${NEG_TAGS.includes(t) ? " neg" : ""}">${esc(t)}</span>`).join("")}</div>` : "";
+  const take = l.take ? `<p class="take"><b>My take</b> ${esc(l.take)}</p>` : "";
+  const info = (l.why || l.concerns) ? `<details class="more-info"><summary>Why it fits and what to watch ›</summary><div class="body">
+      ${l.why ? `<p><b>Why:</b> ${esc(l.why)}</p>` : ""}${l.concerns ? `<p class="concerns"><b>Watch out:</b> ${esc(l.concerns)}</p>` : ""}</div></details>` : "";
+  const mine = me ? tally(l).v[me] : null;
+  let controls = "";
+  if (mode === "new"){
+    controls = `${voteLine(l)}
+      <div class="decide">
+        <button class="vbtn yes${mine === "yes" ? " on" : ""}" data-id="${esc(id)}" data-vote="yes">Yes, I like it</button>
+        <button class="vbtn no${mine === "no" ? " on" : ""}" data-id="${esc(id)}" data-vote="no">No, not for me</button>
+      </div>${mine === "yes" ? `<p class="hint">Changed your mind? Tap Yes again to take it back.</p>` : ""}`;
+  } else if (mode === "play"){
+    controls = `${voteLine(l)}
+      <label><b>Where it stands</b> <select data-status="${esc(id)}">${Object.entries(STATUS).map(([k,v]) => `<option value="${k}"${(l.status||"applied")===k?" selected":""}>${v}</option>`).join("")}</select></label>
+      ${l.nextStep ? `<p><b>Next:</b> ${esc(l.nextStep)}</p>` : ""}`;
+  } else if (mode === "passed"){
+    controls = `${voteLine(l)}<button class="undo" data-undo="${esc(id)}">Undo, put it back in Your call</button>`;
+  }
+  return `<article class="card">
+    <div class="card-head">${ring}<div style="min-width:0"><div class="eyebrow">${eyebrow}</div>
+      <h3 class="title">${esc(l.title || l.address || "Listing")}</h3>
+      ${l.address && l.title ? `<p class="addr">${esc(l.address)}</p>` : ""}</div></div>
+    ${tags}${specs ? `<dl class="specs">${specs}</dl>` : ""}${lines ? `<dl class="lines">${lines}</dl>` : ""}
+    ${take}${info}${link ? `<div>${link}</div>` : ""}${controls}
+  </article>`;
+}
+
+function render(){
+  if (!rows.length) return;
+  const all = rows.map(r => ({id: r.id, l: r.data || {}}));
+  const order = (a,b) => ((b.l.score ?? -1) - (a.l.score ?? -1)) || String(b.l.foundAt||"").localeCompare(String(a.l.foundAt||""));
+  const isBuy = x => x.l.kind === "buy";
+  const anyNo = x => tally(x.l).no >= 1;
+  const myVote = x => me ? tally(x.l).v[me] : undefined;
+  const gone = x => x.l.decision === "no" || x.l.status === "dead" || anyNo(x);
+  const open = all.filter(x => !isBuy(x) && !x.l.decision && !gone(x)).sort(order);
+  const fresh = open.filter(x => !myVote(x));
+  const mine = open.filter(x => myVote(x) === "yes");
+  const play = all.filter(x => !isBuy(x) && x.l.decision === "yes" && x.l.status !== "dead").sort(order);
+  const buyOpen = all.filter(x => isBuy(x) && !gone(x)).sort(order);
+  const buy = buyOpen.filter(x => x.l.decision === "yes" || !myVote(x));
+  const buyMine = buyOpen.filter(x => x.l.decision !== "yes" && myVote(x) === "yes");
+  const passed = all.filter(gone).sort(order);
+  const moreBtn = (n, total, which) => total > n ? `<button class="more" data-more="${which}">Show ${Math.min(5, total - n)} more of ${total - n}</button>` : "";
+
+  $("newList").innerHTML = fresh.length ? fresh.slice(0, showNew).map((x,i) => card(x.id, x.l, "new", i+1)).join("") + moreBtn(showNew, fresh.length, "new")
+    : `<div class="empty">Nothing waiting on you right now. New rentals show up here several times a day.</div>`;
+  $("mineHead").hidden = $("mineList").hidden = !mine.length;
+  $("mineList").innerHTML = mine.map(x => card(x.id, x.l, "new")).join("");
+  $("playList").innerHTML = play.length ? play.map(x => card(x.id, x.l, "play")).join("") : `<div class="empty">Flats you both said Yes to show up here.</div>`;
+  $("buyList").innerHTML = buy.length ? buy.slice(0, showBuy).map((x,i) => card(x.id, x.l, x.l.decision === "yes" ? "play" : "new", i+1)).join("") + moreBtn(showBuy, buy.length, "buy")
+    : `<div class="empty">Nothing to buy waiting on you.</div>`;
+  $("buyMineHead").hidden = $("buyMineList").hidden = !buyMine.length;
+  $("buyMineList").innerHTML = buyMine.map(x => card(x.id, x.l, "new")).join("");
+  $("passedList").innerHTML = passed.length ? passed.map(x => card(x.id, x.l, "passed")).join("") : `<div class="empty">Nothing passed on yet.</div>`;
+  $("nNew").textContent = fresh.length || "";
+  $("nPlay").textContent = play.length || "";
+  $("nBuy").textContent = (buy.length + buyMine.length) || "";
+  $("nPassed").textContent = passed.length || "";
+  $("sNew").textContent = fresh.length; $("sPlay").textContent = play.length; $("sBuy").textContent = buy.length + buyMine.length;
+
+  const weekAgo = Date.now() - 7*86400000;
+  const both = all.filter(x => x.l.bothAt && Date.parse(x.l.bothAt) > weekAgo && x.l.status !== "dead");
+  $("bothAlert").hidden = !both.length;
+  $("bothAlert").innerHTML = both.length ? `<span>You both said yes to ${both.length === 1 ? "a flat" : both.length + " flats"} this week:</span>` + both.map(x => `<span>${esc(x.l.title || x.l.address)}${x.l.nextStep ? ". " + esc(x.l.nextStep) : ""}</span>`).join("") : "";
+}
+
+function renderMeta(m){
+  if (!m) return;
+  if (Array.isArray(m.criteria)) $("criteria").innerHTML = m.criteria.map(c => `<div class="crit"><b>${esc(c[0])}</b>${esc(c[1])}</div>`).join("");
+  if (Array.isArray(m.plan)) $("plan").innerHTML = m.plan.map(s => `<div class="step"><div class="when">${esc(s.when)}</div><div>${esc(s.what)}</div></div>`).join("");
+  if (m.updatedAt){
+    const t = new Date(m.updatedAt);
+    $("updated").textContent = "Last checked for new listings " + t.toLocaleString("en-GB", {timeZone:"Europe/Berlin", weekday:"short", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}) + " Berlin time.";
+  }
+}
+
+function showErr(msg){ $("err").textContent = msg; $("err").hidden = !msg; if (msg) window.scrollTo({top:0, behavior:"smooth"}); }
+
+async function load(){
+  try{
+    const [a, b] = await Promise.all([
+      fetch(`${API}/flat_listings?select=id,data`, {headers: H, cache: "no-store"}),
+      fetch(`${API}/flat_meta?select=data&id=eq.summary`, {headers: H, cache: "no-store"})
+    ]);
+    if (!a.ok) throw new Error(a.status);
+    rows = await a.json();
+    const m = b.ok ? await b.json() : [];
+    renderMeta(m[0] && m[0].data);
+    render();
+    showErr("");
+  }catch(e){ showErr("Couldn't load the listings. Check your connection and pull to refresh."); }
+}
+async function rpc(fn, body){
+  const r = await fetch(`${API}/rpc/${fn}`, {method:"POST", headers: H, body: JSON.stringify(body)});
+  if (!r.ok) throw new Error(await r.text());
+  return r.status === 204 ? null : r.json();
+}
+
+document.addEventListener("click", async e => {
+  const v = e.target.closest("[data-vote]");
+  if (v){
+    if (!me){ $("pick").hidden = false; return; }
+    const id = v.dataset.id, choice = v.dataset.vote;
+    const row = rows.find(r => r.id === id);
+    const cur = row && row.data.votes ? row.data.votes[me] : null;
+    const send = cur === choice ? "clear" : choice;
+    if (send === "no" && !confirm("No is final for both of you. Pass on this one?")) return;
+    document.querySelectorAll(`[data-id="${CSS.escape(id)}"]`).forEach(b => b.disabled = true);
+    try{
+      const d = await rpc("flat_cast_vote", {p_id: id, p_voter: me, p_vote: send});
+      if (row && d) row.data = d;
+      render();
+    }catch(err){ showErr("That vote didn't save. Try again in a moment."); document.querySelectorAll(`[data-id="${CSS.escape(id)}"]`).forEach(b => b.disabled = false); }
+    return;
+  }
+  const u = e.target.closest("[data-undo]");
+  if (u){
+    try{ await rpc("flat_undo", {p_id: u.dataset.undo}); await load(); }catch(err){ showErr("Undo didn't save. Try again in a moment."); }
+    return;
+  }
+  const m = e.target.closest("[data-more]");
+  if (m){ if (m.dataset.more === "new") showNew += 5; else showBuy += 5; render(); return; }
+  const t = e.target.closest("[data-tab]");
+  if (t) showTab(t.dataset.tab, true);
+});
+document.addEventListener("change", async e => {
+  const s = e.target.closest("[data-status]");
+  if (!s) return;
+  try{ await rpc("flat_set_status", {p_id: s.dataset.status, p_status: s.value}); await load(); }catch(err){ showErr("That didn't save. Try again in a moment."); }
+});
+
+const TABS = ["call","play","buy","plan","passed"];
+function showTab(t, scroll){
+  if (!TABS.includes(t)) t = "call";
+  document.querySelectorAll("[data-panel]").forEach(p => { p.hidden = p.dataset.panel !== t; });
+  document.querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === t)));
+  if (scroll) window.scrollTo({top:0});
+}
+showTab((location.hash || "").slice(1), false);
+
+load();
+setInterval(load, 60000);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") load(); });
+setInterval(renderDays, 3600000);
+</script>
+</body>
+</html>
