@@ -258,6 +258,7 @@ function card(id, l, mode, rank){
   const allIn = buy ? (l.totalCost || l.price) : null;
   const specs = [
     buy ? spec(l.totalCost ? "All-in cost" : "Price", eur(allIn)) : spec("Warm rent", eur(l.warmRent)),
+    buy && l.mortgageMonthly ? spec("Mortgage", eur(l.mortgageMonthly) + " / month") : "",
     buy ? spec("Per m²", allIn && l.sqm ? eur(Math.round(allIn / l.sqm)) : null) : spec("Cold rent", eur(l.coldRent)),
     spec("Size", l.sqm && `${l.sqm} m²`),
     spec("Rooms", l.rooms)
