@@ -153,7 +153,6 @@ select{font:inherit;font-weight:600;padding:9px 12px;border-radius:12px;border:0
       <button class="tab" role="tab" data-tab="call" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg>Your call<span class="badge" id="nNew"></span></button>
       <button class="tab" role="tab" data-tab="play" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m11 12 8-8"/><path d="m16 7 2 2"/><path d="m18 5 2 2"/></svg>In play<span class="badge quiet" id="nPlay"></span></button>
       <button class="tab" role="tab" data-tab="buy" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4h8l10 10-8 8L3 12z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg>Buying<span class="badge quiet" id="nBuy"></span></button>
-      <button class="tab" role="tab" data-tab="italy" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="4"/><path d="M3 20c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg>Italy<span class="badge quiet" id="nItaly"></span></button>
       <button class="tab" role="tab" data-tab="plan" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16"/><path d="M9 3v4"/><path d="M15 3v4"/></svg>Plan</button>
       <button class="tab" role="tab" data-tab="passed" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10h14V9"/><path d="M10 13h4"/></svg>Passed<span class="badge quiet" id="nPassed"></span></button>
     </nav>
@@ -191,14 +190,6 @@ select{font:inherit;font-weight:600;padding:9px 12px;border-radius:12px;border:0
     <div class="list" id="buyList"></div>
     <h2 class="sub-h" id="buyMineHead" hidden>You said yes, waiting on the other vote</h2>
     <div class="list" id="buyMineList" hidden></div>
-  </section>
-
-  <section class="view" data-panel="italy" hidden>
-    <h1 class="large">Italy</h1>
-    <p class="lede">A sunny place to fix up in Puglia, near the sea and Bari or Brindisi airport. All-in cost includes the agent, purchase tax, notary and a renovation estimate. Tap Yes or No like the others.</p>
-    <div class="list" id="italyList"></div>
-    <h2 class="sub-h" id="italyMineHead" hidden>You said yes, waiting on the other vote</h2>
-    <div class="list" id="italyMineList" hidden></div>
   </section>
 
   <section class="view" data-panel="plan" hidden>
@@ -317,7 +308,7 @@ function card(id, l, mode, rank){
 
 function render(){
   if (!rows.length) return;
-  const all = rows.map(r => ({id: r.id, l: r.data || {}}));
+  const all = rows.map(r => ({id: r.id, l: r.data || {}})).filter(x => x.l.section !== "italy");
   const order = (a,b) => ((b.l.score ?? -1) - (a.l.score ?? -1)) || String(b.l.foundAt||"").localeCompare(String(a.l.foundAt||""));
   const isItaly = x => x.l.section === "italy";
   const isBuy = x => x.l.kind === "buy" && !isItaly(x);
@@ -325,9 +316,6 @@ function render(){
   const myVote = x => me ? tally(x.l).v[me] : undefined;
   const gone = x => x.l.decision === "no" || x.l.status === "dead" || anyNo(x);
   const open = all.filter(x => !isBuy(x) && !isItaly(x) && !x.l.decision && !gone(x)).sort(order);
-  const itOpen = all.filter(x => isItaly(x) && !gone(x)).sort(order);
-  const itList = itOpen.filter(x => x.l.decision === "yes" || !myVote(x));
-  const itMine = itOpen.filter(x => x.l.decision !== "yes" && myVote(x) === "yes");
   const fresh = open.filter(x => !myVote(x));
   const mine = open.filter(x => myVote(x) === "yes");
   const play = all.filter(x => !isBuy(x) && !isItaly(x) && x.l.decision === "yes" && x.l.status !== "dead").sort(order);
@@ -346,10 +334,6 @@ function render(){
     : `<div class="empty">Nothing to buy waiting on you.</div>`;
   $("buyMineHead").hidden = $("buyMineList").hidden = !buyMine.length;
   $("buyMineList").innerHTML = buyMine.map(x => card(x.id, x.l, "new")).join("");
-  $("italyList").innerHTML = itList.length ? itList.map((x,i) => card(x.id, x.l, "new", i+1)).join("") : `<div class="empty">Nothing in Italy waiting on you.</div>`;
-  $("italyMineHead").hidden = $("italyMineList").hidden = !itMine.length;
-  $("italyMineList").innerHTML = itMine.map(x => card(x.id, x.l, "new")).join("");
-  $("nItaly").textContent = (itList.length + itMine.length) || "";
   $("passedList").innerHTML = passed.length ? passed.map(x => card(x.id, x.l, "passed")).join("") : `<div class="empty">Nothing passed on yet.</div>`;
   $("nNew").textContent = fresh.length || "";
   $("nPlay").textContent = play.length || "";
@@ -428,7 +412,7 @@ document.addEventListener("change", async e => {
   try{ await rpc("flat_set_status", {p_id: s.dataset.status, p_status: s.value}); await load(); }catch(err){ showErr("That didn't save. Try again in a moment."); }
 });
 
-const TABS = ["call","play","buy","italy","plan","passed"];
+const TABS = ["call","play","buy","plan","passed"];
 function showTab(t, scroll){
   if (!TABS.includes(t)) t = "call";
   document.querySelectorAll("[data-panel]").forEach(p => { p.hidden = p.dataset.panel !== t; });
