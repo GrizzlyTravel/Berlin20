@@ -124,12 +124,13 @@ export function PlanCard({ plan, go }) {
           {p.booking && p.booking !== 'none' && <span className="badge book">{p.booking}</span>}
         </div>
         {j && <button className="btn rust small" onClick={() => go('#/j/' + j.slug)}>See the plan</button>}
+        {p.url && <a className="lnk" href={p.url} target="_blank" rel="noreferrer">Details and tickets</a>}
       </div>
 
       {book.length > 0 && (
         <div className="booknow">
           <div className="eyebrow">Book this week</div>
-          <ul>{book.map((b, i) => <li key={i}><b>{b.title}</b>{b.note ? <span>{b.note}</span> : null}</li>)}</ul>
+          <ul>{book.map((b, i) => <li key={i}>{b.url ? <a className="lnk" href={b.url} target="_blank" rel="noreferrer"><b>{b.title}</b></a> : <b>{b.title}</b>}{b.note ? <span>{b.note}</span> : null}</li>)}</ul>
         </div>
       )}
 
@@ -156,6 +157,7 @@ function PlanLine({ x, tag }) {
           {x.dog && <span className={`badge ${dogClass(x.dog)}`}>Pepper: {x.dog}</span>}
           {x.booking && x.booking !== 'none' && <span className="badge book">{x.booking}</span>}
         </div>
+        {x.url && <a className="lnk" href={x.url} target="_blank" rel="noreferrer">Details and tickets</a>}
       </div>
     </div>
   )
